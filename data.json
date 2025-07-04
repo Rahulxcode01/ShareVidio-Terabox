@@ -1,24 +1,24 @@
 [
-    {
-        "judul": "Video Viral Terbaru",
-        "deskripsi": "Video panas yang sedang trending di media sosial!",
-        "link": "https://terabox.com/video1",
-        "gambar": "https://i.ibb.co/contoh1.jpg",
-        "kategori": "Hot",
-        "durasi": "12:45",
-        "views": "1.2JT x",
-        "trending": true,
-        "new": true
-    },
-    {
-        "judul": "Koleksi Eksklusif",
-        "deskripsi": "Kumpulan video spesial dari berbagai bintang",
-        "link": "https://terabox.com/video2",
-        "gambar": "https://i.ibb.co/contoh2.jpg",
-        "kategori": "Collection",
-        "durasi": "45:30",
-        "views": "850RB x",
-        "trending": false,
-        "new": false
-    }
+  {
+    "judul": "Video Pertama Saya",
+    "deskripsi": "Deskripsi untuk video pertama.",
+    "gambar": "https://url-gambar.com/gambar1.jpg",
+    "link": "https://url-video.com/video1",
+    "kategori": "Edukasi",
+    "durasi": "10:00",
+    "views": 100,
+    "new": true,
+    "trending": false
+  },
+  {
+    "judul": "Video Kedua Saya",
+    "deskripsi": "Deskripsi untuk video kedua.",
+    "gambar": "https://url-gambar.com/gambar2.jpg",
+    "link": "https://url-video.com/video2",
+    "kategori": "Hiburan",
+    "durasi": "05:30",
+    "views": 500,
+    "new": false,
+    "trending": true
+  }
 ]
