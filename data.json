@@ -1,23 +1,12 @@
 [
   {
-    "judul": "Video Pertama Saya",
-    "deskripsi": "Deskripsi untuk video pertama.",
-    "gambar": "https://url-gambar.com/gambar1.jpg",
-    "link": "https://url-video.com/video1",
-    "kategori": "Edukasi",
-    "durasi": "10:00",
-    "views": 100,
-    "new": true,
-    "trending": false
-  },
-  {
-    "judul": "Video Kedua Saya",
-    "deskripsi": "Deskripsi untuk video kedua.",
-    "gambar": "https://url-gambar.com/gambar2.jpg",
-    "link": "https://url-video.com/video2",
-    "kategori": "Hiburan",
-    "durasi": "05:30",
-    "views": 500,
+    "judul": "Tes",
+    "deskripsi": "Ssmmss",
+    "link": "smsskmss",
+    "gambar": "https://i.ibb.co/YFRs5rdm/2cc16d064a5c.jpg",
+    "kategori": "Viral",
+    "durasi": "10.30",
+    "views": 200000,
     "new": false,
     "trending": true
   }
