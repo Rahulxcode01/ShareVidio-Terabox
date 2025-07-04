@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeraBox Viral 18+ Viewer</title>
+    <title>Viral 18+ Video Viewer</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
             --primary: #e63946;
@@ -46,30 +47,6 @@
             text-align: center;
             margin-bottom: 2rem;
             position: relative;
-        }
-
-        .language-switcher {
-            position: absolute;
-            right: 1rem;
-            top: 1rem;
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .lang-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: var(--text-primary);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
-        }
-
-        .lang-btn.active {
-            background: var(--primary);
-            font-weight: 500;
         }
 
         .logo {
@@ -120,6 +97,7 @@
             gap: 1rem;
             margin-bottom: 1.5rem;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .search-container {
@@ -145,13 +123,12 @@
             box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.3);
         }
 
-        #searchInput::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
+        #searchInput::placeholder { color: rgba(255, 255, 255, 0.5); }
 
-        .filter-container {
+        .filter-buttons {
             display: flex;
             gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .filter-btn {
@@ -167,18 +144,14 @@
             gap: 0.5rem;
         }
 
-        .filter-btn.active {
-            background: var(--primary);
-        }
-
-        .filter-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
+        .filter-btn.active { background: var(--primary); }
+        .filter-btn:not(.active):hover { background: rgba(255, 255, 255, 0.2); }
 
         .data-cards {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
+            margin-top: 1.5rem;
         }
 
         .data-card {
@@ -188,6 +161,8 @@
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .data-card:hover {
@@ -195,19 +170,22 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
             background: var(--card-hover);
         }
-
+        
         .card-badge {
             position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
+            top: 0.75rem;
             padding: 0.3rem 0.6rem;
-            background: rgba(0, 0, 0, 0.7);
-            color: var(--primary);
+            background: var(--primary);
+            color: white;
             border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            z-index: 1;
+            font-size: 0.7rem;
+            font-weight: 600;
+            z-index: 2;
+            text-transform: uppercase;
         }
+        .card-badge.new { left: 0.75rem; }
+        .card-badge.trending { right: 0.75rem; background: var(--warning); color: #000;}
+
 
         .card-image-container {
             width: 100%;
@@ -220,19 +198,20 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.3s ease;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        .data-card:hover .card-image {
-            transform: scale(1.05);
-        }
+        .data-card:hover .card-image { transform: scale(1.05); }
 
         .card-body {
             padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
         }
 
         .card-title {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
             display: -webkit-box;
@@ -249,6 +228,7 @@
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            flex-grow: 1;
         }
 
         .card-meta {
@@ -285,22 +265,17 @@
             border-radius: 6px;
             text-decoration: none;
             font-weight: 500;
+            cursor: pointer;
+            border: none;
             transition: all 0.3s ease;
         }
 
         .action-btn:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
         }
-
-        .action-btn.secondary {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .action-btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
+        
         .empty-state {
             text-align: center;
             padding: 3rem;
@@ -319,30 +294,15 @@
             padding: 1.5rem;
             color: var(--text-secondary);
             font-size: 0.9rem;
-            background: rgba(0, 0, 0, 0.3);
-        }
-
-        .file-input-container {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-
-        .file-input-container input[type="file"] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
+            background: rgba(0, 0, 0, 0.2);
+            margin-top: 2rem;
         }
 
         .loading {
             display: none;
-            margin: 1rem 0;
+            padding: 2rem 0;
             color: var(--primary);
-            font-size: 0.9rem;
+            font-size: 1rem;
             text-align: center;
         }
 
@@ -350,12 +310,12 @@
             border: 3px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             border-top: 3px solid var(--primary);
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
             display: inline-block;
             vertical-align: middle;
-            margin-right: 8px;
+            margin-right: 10px;
         }
 
         @keyframes spin {
@@ -364,41 +324,16 @@
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 1.5rem 1rem;
-            }
-
-            header {
-                padding-top: 3rem;
-            }
-
-            .language-switcher {
-                position: static;
-                justify-content: center;
-                margin-bottom: 1rem;
-            }
-
-            .controls {
-                flex-direction: column;
-            }
-
-            .filter-container {
-                flex-wrap: wrap;
-            }
-
-            .data-cards {
-                grid-template-columns: 1fr;
-            }
+            .container { padding: 1.5rem 1rem; }
+            header { padding-top: 3rem; }
+            .controls { flex-direction: column; align-items: stretch; }
+            .data-cards { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <div class="language-switcher">
-                <button class="lang-btn active" id="idLang">ID</button>
-                <button class="lang-btn" id="enLang">EN</button>
-            </div>
             <div class="logo">
                 <i class="fas fa-fire"></i>
             </div>
@@ -414,9 +349,9 @@
 
             <div class="controls">
                 <div class="search-container">
-                    <input type="text" id="searchInput" placeholder="Cari video panas..." oninput="filterData()">
+                    <input type="text" id="searchInput" placeholder="Cari video panas...">
                 </div>
-                <div class="filter-container">
+                <div class="filter-buttons">
                     <button class="filter-btn active" data-filter="all">
                         <i class="fas fa-star"></i>
                         <span id="filterAll">Semua</span>
@@ -432,28 +367,13 @@
                 </div>
             </div>
 
-            <div class="file-input-container">
-                <button class="action-btn secondary">
-                    <i class="fas fa-file-import"></i>
-                    <span id="importBtn">Import Data</span>
-                    <input type="file" id="jsonFileInput" accept=".json">
-                </button>
-            </div>
-
             <div class="loading" id="loadingIndicator">
                 <span class="spinner"></span>
                 <span id="loadingText">Memuat data...</span>
             </div>
 
-            <div class="data-cards" id="dataContainer">
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-film"></i>
-                    </div>
-                    <h3 id="emptyTitle">Tidak ada video</h3>
-                    <p id="emptyDesc">Import file JSON atau tambahkan data</p>
+            <div class="data-cards" id="dataCardsContainer">
                 </div>
-            </div>
         </div>
     </div>
 
@@ -462,179 +382,148 @@
     </footer>
 
     <script>
-        // Language texts
-        const translations = {
-            id: {
-                title: "Video Viral 18+",
-                subtitle: "Koleksi video panas eksklusif hanya untuk dewasa",
-                warning: "Konten ini hanya untuk usia 18+",
-                searchPlaceholder: "Cari video panas...",
-                filterAll: "Semua",
-                filterTrending: "Trending",
-                filterNew: "Terbaru",
-                importBtn: "Import Data",
-                loadingText: "Memuat data...",
-                emptyTitle: "Tidak ada video",
-                emptyDesc: "Import file JSON atau tambahkan data",
-                footerText: "Edit file data.json di GitHub untuk memperbarui konten",
-                category: "Kategori",
-                duration: "Durasi",
-                views: "Ditonton",
-                size: "Ukuran",
-                uncategorized: "Umum",
-                watchNow: "Tonton Sekarang",
-                download: "Download",
-                newBadge: "BARU",
-                trendingBadge: "TRENDING"
-            },
-            en: {
-                title: "Viral 18+ Videos",
-                subtitle: "Exclusive hot video collection for adults only",
-                warning: "This content is for 18+ only",
-                searchPlaceholder: "Search hot videos...",
-                filterAll: "All",
-                filterTrending: "Trending",
-                filterNew: "New",
-                importBtn: "Import Data",
-                loadingText: "Loading data...",
-                emptyTitle: "No videos",
-                emptyDesc: "Import JSON file or add data",
-                footerText: "Edit data.json file on GitHub to update content",
-                category: "Category",
-                duration: "Duration",
-                views: "Views",
-                size: "Size",
-                uncategorized: "General",
-                watchNow: "Watch Now",
-                download: "Download",
-                newBadge: "NEW",
-                trendingBadge: "TRENDING"
-            }
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- KONFIGURASI PENTING ---
+        // Ganti URL ini dengan URL "RAW" dari file data.json di repositori GitHub Anda.
+        const GITHUB_JSON_URL = 'https://raw.githubusercontent.com/NAMA_USER_ANDA/NAMA_REPO_ANDA/main/data.json';
+        
+        // --- ELEMEN DOM ---
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const dataCardsContainer = document.getElementById('dataCardsContainer');
+        const searchInput = document.getElementById('searchInput');
+
+        // --- STATE APLIKASI ---
+        let allData = [];
+        let currentFilter = 'all';
+        
+        // --- INISIALISASI ---
+        const init = async () => {
+            setupEventListeners();
+            await loadData();
         };
 
-        let currentLang = 'id';
-        let data = [];
-        let currentFilter = 'all';
-
-        // DOM elements
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const jsonFileInput = document.getElementById('jsonFileInput');
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            // Set up language switcher
-            document.getElementById('idLang').addEventListener('click', () => setLanguage('id'));
-            document.getElementById('enLang').addEventListener('click', () => setLanguage('en'));
+        // --- PENGATUR EVENT LISTENER ---
+        const setupEventListeners = () => {
+            searchInput.addEventListener('input', () => renderDataCards());
             
-            // Set up filter buttons
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelector('.filter-btn.active').classList.remove('active');
                     btn.classList.add('active');
                     currentFilter = btn.dataset.filter;
-                    filterData();
+                    renderDataCards();
                 });
             });
+        };
 
-            // Set up file input
-            jsonFileInput.addEventListener('change', handleFileUpload);
-
-            // Load initial data
-            loadData();
-        });
-
-        // Load data from external JSON file
-        async function loadData() {
+        // --- FUNGSI UTAMA ---
+        const loadData = async () => {
             showLoading();
+            dataCardsContainer.innerHTML = '';
+
             try {
-                const response = await fetch('data.json');
-                if (!response.ok) {
-                    throw new Error('Failed to load data');
+                const response = await fetch(GITHUB_JSON_URL);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                
+                if (Array.isArray(data)) {
+                    allData = data;
+                    renderDataCards();
+                } else {
+                    showEmptyState("Gagal Memuat Data", "Format data tidak valid.");
                 }
-                data = await response.json();
-                renderDataCards(filterItems(data));
             } catch (error) {
-                console.error('Error loading data:', error);
-                showEmptyState(
-                    currentLang === 'id' ? 'Gagal memuat data' : 'Failed to load data',
-                    currentLang === 'id' ? 'Pastikan data.json ada' : 'Make sure data.json exists'
-                );
+                console.error('Error loading data from GitHub:', error);
+                showEmptyState("Gagal Memuat Data", "Periksa koneksi internet atau URL di konfigurasi.");
             } finally {
                 hideLoading();
             }
-        }
+        };
 
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            showLoading(currentLang === 'id' ? 'Memproses file...' : 'Processing file...');
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const jsonData = JSON.parse(e.target.result);
-                    if (Array.isArray(jsonData)) {
-                        data = jsonData;
-                        localStorage.setItem('viralVideosData', JSON.stringify(data));
-                        renderDataCards(filterItems(data));
-                    } else {
-                        throw new Error('Invalid JSON format');
-                    }
-                } catch (error) {
-                    console.error('Error parsing file:', error);
-                    alert(currentLang === 'id' ? 
-                        'Error: Format file tidak valid' : 
-                        'Error: Invalid file format');
-                } finally {
-                    hideLoading();
-                    event.target.value = '';
-                }
-            };
-            reader.readAsText(file);
-        }
+        const filterAndSortData = () => {
+            let filtered = [...allData];
+            const searchTerm = searchInput.value.toLowerCase();
 
-        function filterItems(items) {
-            let filtered = items;
-            
-            // Apply search filter
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             if (searchTerm) {
-                filtered = filtered.filter(item => 
-                    item.judul.toLowerCase().includes(searchTerm) || 
-                    (item.deskripsi && item.deskripsi.toLowerCase().includes(searchTerm)) ||
-                    (item.kategori && item.kategori.toLowerCase().includes(searchTerm))
+                filtered = filtered.filter(item =>
+                    Object.values(item).some(val => 
+                        String(val).toLowerCase().includes(searchTerm)
+                    )
                 );
             }
-            
-            // Apply category filter
-            switch(currentFilter) {
-                case 'trending':
-                    filtered = filtered.filter(item => item.trending === true);
-                    break;
-                case 'new':
-                    filtered = filtered.filter(item => item.new === true);
-                    break;
+
+            if (currentFilter === 'trending') {
+                filtered = filtered.filter(item => item.trending === true);
+            } else if (currentFilter === 'new') {
+                filtered = filtered.filter(item => item.new === true);
             }
-            
+
             return filtered;
-        }
-
-        function filterData() {
-            renderDataCards(filterItems(data));
-        }
-
-        function renderDataCards(items) {
-            const container = document.getElementById('dataContainer');
+        };
+        
+        const renderDataCards = () => {
+            const filteredData = filterAndSortData();
             
-            if (!items || items.length === 0) {
-                showEmptyState(
-                    currentLang === 'id' ? 'Tidak ada hasil' : 'No results',
-                    currentLang === 'id' ? 'Coba kata kunci lain' : 'Try different keywords'
-                );
+            if (!filteredData || filteredData.length === 0) {
+                if (searchInput.value || currentFilter !== 'all') {
+                    showEmptyState("Tidak ada hasil", "Coba kata kunci atau filter lain.");
+                } else {
+                    showEmptyState("Tidak Ada Video", "Data kosong atau gagal dimuat.");
+                }
                 return;
             }
-            
-            container.innerHTML = items.map(item => `
+
+            dataCardsContainer.innerHTML = filteredData.map(item => `
                 <div class="data-card">
-                    ${item.new ? `<span class="card-badge">${translations[currentLang].newBadge}</span>
+                    ${item.new ? `<span class="card-badge new">BARU</span>` : ''}
+                    ${item.trending ? `<span class="card-badge trending">TRENDING</span>` : ''}
+                    
+                    <div class="card-image-container">
+                        <img src="${item.gambar || 'https://via.placeholder.com/600x400?text=Video'}" 
+                             class="card-image" 
+                             alt="${item.judul}"
+                             onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=Error';">
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">${item.judul || 'Tanpa Judul'}</h3>
+                        <p class="card-text">${item.deskripsi || 'Tidak ada deskripsi.'}</p>
+                        <div class="card-meta">
+                            <span><i class="fas fa-tag"></i> ${item.kategori || 'Umum'}</span>
+                            <span><i class="fas fa-clock"></i> ${item.durasi || 'N/A'}</span>
+                        </div>
+                        <div class="card-footer">
+                            <span class="view-count"><i class="fas fa-eye"></i> ${item.views || '0'}</span>
+                            <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="action-btn">
+                                <i class="fas fa-play"></i> Tonton Sekarang
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        // --- FUNGSI BANTU ---
+        const showLoading = () => {
+            document.getElementById('loadingIndicator').style.display = 'block';
+        }
+        const hideLoading = () => {
+            document.getElementById('loadingIndicator').style.display = 'none';
+        }
+
+        const showEmptyState = (title, description) => {
+            dataCardsContainer.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fas fa-video-slash"></i></div>
+                    <h3>${title}</h3>
+                    <p>${description}</p>
+                </div>
+            `;
+        };
+
+        // --- JALANKAN APLIKASI ---
+        init();
+    });
+    </script>
+</body>
+</html>
