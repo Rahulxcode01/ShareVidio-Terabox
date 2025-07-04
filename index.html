@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeraBox Data Viewer</title>
+    <title>TeraBox Viral 18+ Viewer</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --dark-bg: #1a1a2e;
-            --card-bg: #16213e;
-            --card-hover: #1e2a5a;
+            --primary: #e63946;
+            --primary-dark: #d62839;
+            --secondary: #f4a261;
+            --dark-bg: #1a1a1a;
+            --card-bg: #252525;
+            --card-hover: #333;
             --text-primary: #ffffff;
             --text-secondary: rgba(255, 255, 255, 0.7);
+            --warning: #ff9f1c;
         }
 
         * {
@@ -30,18 +30,21 @@
             background: var(--dark-bg);
             color: var(--text-primary);
             line-height: 1.6;
-            transition: all 0.3s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem 1rem;
+            flex: 1;
         }
 
         header {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             position: relative;
         }
 
@@ -69,14 +72,10 @@
             font-weight: 500;
         }
 
-        .lang-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
         .logo {
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--primary), #4cc9f0);
+            background: linear-gradient(135deg, var(--primary), #ff6b6b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             display: inline-block;
@@ -92,20 +91,40 @@
             font-size: 1rem;
             color: var(--text-secondary);
             max-width: 600px;
-            margin: 0 auto;
+            margin: 0 auto 1.5rem;
         }
 
         .data-container {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 12px;
             padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+        }
+
+        .warning-banner {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(230, 57, 70, 0.1);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
 
         .search-container {
-            margin-bottom: 2rem;
+            flex: 1;
+            min-width: 250px;
         }
 
         #searchInput {
@@ -123,11 +142,37 @@
         #searchInput:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.3);
         }
 
         #searchInput::placeholder {
-            color: var(--text-secondary);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .data-cards {
@@ -142,19 +187,44 @@
             overflow: hidden;
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
         }
 
         .data-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
             background: var(--card-hover);
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.3rem 0.6rem;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            z-index: 1;
+        }
+
+        .card-image-container {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            position: relative;
         }
 
         .card-image {
             width: 100%;
-            height: 180px;
+            height: 100%;
             object-fit: cover;
-            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .data-card:hover .card-image {
+            transform: scale(1.05);
         }
 
         .card-body {
@@ -163,8 +233,12 @@
 
         .card-title {
             font-size: 1.2rem;
-            font-weight: 500;
-            margin-bottom: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .card-text {
@@ -180,15 +254,9 @@
         .card-meta {
             display: flex;
             justify-content: space-between;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
-            margin-bottom: 1.25rem;
-        }
-
-        .card-meta span {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
+            margin-bottom: 1rem;
         }
 
         .card-footer {
@@ -199,34 +267,38 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .card-badge {
-            display: inline-flex;
+        .view-count {
+            display: flex;
             align-items: center;
-            gap: 0.4rem;
-            padding: 0.4rem 0.8rem;
-            background: rgba(67, 97, 238, 0.2);
-            color: var(--primary);
-            border-radius: 20px;
+            gap: 0.3rem;
             font-size: 0.8rem;
-            font-weight: 500;
+            color: var(--text-secondary);
         }
 
-        .download-btn {
+        .action-btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
-            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
             background: var(--primary);
             color: white;
             border-radius: 6px;
-            font-size: 0.85rem;
             text-decoration: none;
-            transition: all 0.2s ease;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
 
-        .download-btn:hover {
+        .action-btn:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
+        }
+
+        .action-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .action-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .empty-state {
@@ -244,10 +316,51 @@
 
         footer {
             text-align: center;
-            margin-top: 3rem;
             padding: 1.5rem;
             color: var(--text-secondary);
             font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .file-input-container {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-container input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .loading {
+            display: none;
+            margin: 1rem 0;
+            color: var(--primary);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid var(--primary);
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @media (max-width: 768px) {
@@ -256,25 +369,25 @@
             }
 
             header {
-                margin-bottom: 1.5rem;
-            }
-
-            .logo {
-                font-size: 2rem;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            .data-container {
-                padding: 1.5rem;
+                padding-top: 3rem;
             }
 
             .language-switcher {
                 position: static;
                 justify-content: center;
                 margin-bottom: 1rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .filter-container {
+                flex-wrap: wrap;
+            }
+
+            .data-cards {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -287,160 +400,125 @@
                 <button class="lang-btn" id="enLang">EN</button>
             </div>
             <div class="logo">
-                <i class="fas fa-box-open"></i>
+                <i class="fas fa-fire"></i>
             </div>
-            <h1 id="title">TeraBox Data Viewer</h1>
-            <p class="subtitle" id="subtitle">Tampilkan data TeraBox Anda dengan tampilan yang menarik</p>
+            <h1 id="title">Video Viral 18+</h1>
+            <p class="subtitle" id="subtitle">Koleksi video panas eksklusif hanya untuk dewasa</p>
         </header>
 
         <div class="data-container">
-            <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Cari berdasarkan judul, deskripsi atau kategori..." oninput="filterData()">
+            <div class="warning-banner">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="warningText">Konten ini hanya untuk usia 18+</span>
+            </div>
+
+            <div class="controls">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Cari video panas..." oninput="filterData()">
+                </div>
+                <div class="filter-container">
+                    <button class="filter-btn active" data-filter="all">
+                        <i class="fas fa-star"></i>
+                        <span id="filterAll">Semua</span>
+                    </button>
+                    <button class="filter-btn" data-filter="trending">
+                        <i class="fas fa-fire"></i>
+                        <span id="filterTrending">Trending</span>
+                    </button>
+                    <button class="filter-btn" data-filter="new">
+                        <i class="fas fa-clock"></i>
+                        <span id="filterNew">Terbaru</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="file-input-container">
+                <button class="action-btn secondary">
+                    <i class="fas fa-file-import"></i>
+                    <span id="importBtn">Import Data</span>
+                    <input type="file" id="jsonFileInput" accept=".json">
+                </button>
+            </div>
+
+            <div class="loading" id="loadingIndicator">
+                <span class="spinner"></span>
+                <span id="loadingText">Memuat data...</span>
             </div>
 
             <div class="data-cards" id="dataContainer">
                 <div class="empty-state">
                     <div class="empty-icon">
-                        <i class="fas fa-database"></i>
+                        <i class="fas fa-film"></i>
                     </div>
-                    <h3 id="emptyTitle">Tidak ada data</h3>
-                    <p id="emptyDesc">Data akan muncul setelah Anda memuat file JSON</p>
+                    <h3 id="emptyTitle">Tidak ada video</h3>
+                    <p id="emptyDesc">Import file JSON atau tambahkan data</p>
                 </div>
             </div>
         </div>
-
-        <footer>
-            <p id="footerText">Edit file data.json di GitHub untuk memperbarui konten</p>
-        </footer>
     </div>
+
+    <footer>
+        <p id="footerText">Edit file data.json di GitHub untuk memperbarui konten</p>
+    </footer>
 
     <script>
         // Language texts
         const translations = {
             id: {
-                title: "TeraBox Data Viewer",
-                subtitle: "Tampilkan data TeraBox Anda dengan tampilan yang menarik",
-                searchPlaceholder: "Cari berdasarkan judul, deskripsi atau kategori...",
-                emptyTitle: "Tidak ada data",
-                emptyDesc: "Data akan muncul setelah Anda memuat file JSON",
+                title: "Video Viral 18+",
+                subtitle: "Koleksi video panas eksklusif hanya untuk dewasa",
+                warning: "Konten ini hanya untuk usia 18+",
+                searchPlaceholder: "Cari video panas...",
+                filterAll: "Semua",
+                filterTrending: "Trending",
+                filterNew: "Terbaru",
+                importBtn: "Import Data",
+                loadingText: "Memuat data...",
+                emptyTitle: "Tidak ada video",
+                emptyDesc: "Import file JSON atau tambahkan data",
                 footerText: "Edit file data.json di GitHub untuk memperbarui konten",
                 category: "Kategori",
+                duration: "Durasi",
+                views: "Ditonton",
                 size: "Ukuran",
-                uncategorized: "Tanpa kategori",
-                sizeNotSpecified: "Ukuran tidak tersedia",
-                noDescription: "Tidak ada deskripsi",
-                download: "Unduh"
+                uncategorized: "Umum",
+                watchNow: "Tonton Sekarang",
+                download: "Download",
+                newBadge: "BARU",
+                trendingBadge: "TRENDING"
             },
             en: {
-                title: "TeraBox Data Viewer",
-                subtitle: "Display your TeraBox data in a beautiful layout",
-                searchPlaceholder: "Search by title, description or category...",
-                emptyTitle: "No data available",
-                emptyDesc: "Data will appear after loading JSON file",
+                title: "Viral 18+ Videos",
+                subtitle: "Exclusive hot video collection for adults only",
+                warning: "This content is for 18+ only",
+                searchPlaceholder: "Search hot videos...",
+                filterAll: "All",
+                filterTrending: "Trending",
+                filterNew: "New",
+                importBtn: "Import Data",
+                loadingText: "Loading data...",
+                emptyTitle: "No videos",
+                emptyDesc: "Import JSON file or add data",
                 footerText: "Edit data.json file on GitHub to update content",
                 category: "Category",
+                duration: "Duration",
+                views: "Views",
                 size: "Size",
-                uncategorized: "Uncategorized",
-                sizeNotSpecified: "Size not specified",
-                noDescription: "No description available",
-                download: "Download"
+                uncategorized: "General",
+                watchNow: "Watch Now",
+                download: "Download",
+                newBadge: "NEW",
+                trendingBadge: "TRENDING"
             }
         };
 
         let currentLang = 'id';
         let data = [];
+        let currentFilter = 'all';
 
-        // Load data from external JSON file
-        async function loadData() {
-            try {
-                const response = await fetch('data.json');
-                if (!response.ok) {
-                    throw new Error('Gagal memuat data');
-                }
-                data = await response.json();
-                renderDataCards(data);
-            } catch (error) {
-                console.error('Error loading data:', error);
-                document.getElementById('emptyTitle').textContent = currentLang === 'id' ? 
-                    'Error memuat data' : 'Error loading data';
-                document.getElementById('emptyDesc').textContent = currentLang === 'id' ?
-                    'Pastikan data.json ada dan berisi JSON yang valid' : 
-                    'Make sure data.json exists and contains valid JSON';
-            }
-        }
-
-        function filterData() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const filteredData = data.filter(item => 
-                item.judul.toLowerCase().includes(searchTerm) || 
-                (item.deskripsi && item.deskripsi.toLowerCase().includes(searchTerm)) ||
-                (item.kategori && item.kategori.toLowerCase().includes(searchTerm))
-            );
-            renderDataCards(filteredData);
-        }
-
-        function renderDataCards(items) {
-            const container = document.getElementById('dataContainer');
-            
-            if (!items || items.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-database"></i>
-                        </div>
-                        <h3>${currentLang === 'id' ? 'Tidak ada data' : 'No data available'}</h3>
-                        <p>${currentLang === 'id' ? 
-                            'Tidak ada item yang sesuai dengan pencarian' : 
-                            'No items match your search criteria'}</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = items.map(item => `
-                <div class="data-card">
-                    <img src="${item.gambar || 'https://via.placeholder.com/600x400?text=No+Image'}" 
-                         class="card-image" 
-                         alt="${item.judul}"
-                         onerror="this.src='https://via.placeholder.com/600x400?text=Image+Error'">
-                    <div class="card-body">
-                        <h3 class="card-title">${item.judul}</h3>
-                        <p class="card-text">${item.deskripsi || translations[currentLang].noDescription}</p>
-                        <div class="card-meta">
-                            <span><i class="fas fa-tag"></i> ${item.kategori || translations[currentLang].uncategorized}</span>
-                            <span><i class="fas fa-weight-hanging"></i> ${item.ukuran || translations[currentLang].sizeNotSpecified}</span>
-                        </div>
-                        <div class="card-footer">
-                            <span class="card-badge"><i class="fas fa-link"></i> TeraBox</span>
-                            <a href="${item.link}" target="_blank" class="download-btn">
-                                <i class="fas fa-download"></i> ${translations[currentLang].download}
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function setLanguage(lang) {
-            currentLang = lang;
-            
-            // Update UI texts
-            document.getElementById('title').textContent = translations[lang].title;
-            document.getElementById('subtitle').textContent = translations[lang].subtitle;
-            document.getElementById('searchInput').placeholder = translations[lang].searchPlaceholder;
-            document.getElementById('emptyTitle').textContent = translations[lang].emptyTitle;
-            document.getElementById('emptyDesc').textContent = translations[lang].emptyDesc;
-            document.getElementById('footerText').textContent = translations[lang].footerText;
-            
-            // Update active language button
-            document.getElementById('idLang').classList.toggle('active', lang === 'id');
-            document.getElementById('enLang').classList.toggle('active', lang === 'en');
-            
-            // Re-render cards if data exists
-            if (data.length > 0) {
-                renderDataCards(data);
-            }
-        }
+        // DOM elements
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const jsonFileInput = document.getElementById('jsonFileInput');
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
@@ -448,9 +526,115 @@
             document.getElementById('idLang').addEventListener('click', () => setLanguage('id'));
             document.getElementById('enLang').addEventListener('click', () => setLanguage('en'));
             
-            // Load data
+            // Set up filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    filterData();
+                });
+            });
+
+            // Set up file input
+            jsonFileInput.addEventListener('change', handleFileUpload);
+
+            // Load initial data
             loadData();
         });
-    </script>
-</body>
-</html>
+
+        // Load data from external JSON file
+        async function loadData() {
+            showLoading();
+            try {
+                const response = await fetch('data.json');
+                if (!response.ok) {
+                    throw new Error('Failed to load data');
+                }
+                data = await response.json();
+                renderDataCards(filterItems(data));
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showEmptyState(
+                    currentLang === 'id' ? 'Gagal memuat data' : 'Failed to load data',
+                    currentLang === 'id' ? 'Pastikan data.json ada' : 'Make sure data.json exists'
+                );
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            showLoading(currentLang === 'id' ? 'Memproses file...' : 'Processing file...');
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const jsonData = JSON.parse(e.target.result);
+                    if (Array.isArray(jsonData)) {
+                        data = jsonData;
+                        localStorage.setItem('viralVideosData', JSON.stringify(data));
+                        renderDataCards(filterItems(data));
+                    } else {
+                        throw new Error('Invalid JSON format');
+                    }
+                } catch (error) {
+                    console.error('Error parsing file:', error);
+                    alert(currentLang === 'id' ? 
+                        'Error: Format file tidak valid' : 
+                        'Error: Invalid file format');
+                } finally {
+                    hideLoading();
+                    event.target.value = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function filterItems(items) {
+            let filtered = items;
+            
+            // Apply search filter
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (searchTerm) {
+                filtered = filtered.filter(item => 
+                    item.judul.toLowerCase().includes(searchTerm) || 
+                    (item.deskripsi && item.deskripsi.toLowerCase().includes(searchTerm)) ||
+                    (item.kategori && item.kategori.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            // Apply category filter
+            switch(currentFilter) {
+                case 'trending':
+                    filtered = filtered.filter(item => item.trending === true);
+                    break;
+                case 'new':
+                    filtered = filtered.filter(item => item.new === true);
+                    break;
+            }
+            
+            return filtered;
+        }
+
+        function filterData() {
+            renderDataCards(filterItems(data));
+        }
+
+        function renderDataCards(items) {
+            const container = document.getElementById('dataContainer');
+            
+            if (!items || items.length === 0) {
+                showEmptyState(
+                    currentLang === 'id' ? 'Tidak ada hasil' : 'No results',
+                    currentLang === 'id' ? 'Coba kata kunci lain' : 'Try different keywords'
+                );
+                return;
+            }
+            
+            container.innerHTML = items.map(item => `
+                <div class="data-card">
+                    ${item.new ? `<span class="card-badge">${translations[currentLang].newBadge}</span>
