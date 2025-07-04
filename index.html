@@ -3,282 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Share TeraBox</title>
+  <title>Viewer TeraBox</title>
   <style>
-    body { font-family: sans-serif; background: #f9f9f9; margin: 0; padding: 20px; }
-    h1 { text-align: center; }
-    .controls, .admin-controls {
-      display: flex; flex-wrap: wrap; justify-content: center;
-      gap: 10px; margin-bottom: 20px;
-    }
-    input, select, button, textarea {
-      padding: 10px; font-size: 14px;
-      border-radius: 6px; border: 1px solid #ccc;
-    }
-    .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+    body { font-family: sans-serif; margin: 20px; background: #f4f4f4; color: #333; }
+    h1 { text-align: center; margin-bottom: 30px; }
     .card {
-      background: white; padding: 16px; border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+      background: white; padding: 15px; margin: 10px auto;
+      border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); max-width: 600px;
     }
-    .card img { width: 100%; border-radius: 6px; margin-bottom: 10px; }
-    .judul { font-weight: bold; font-size: 16px; }
-    .meta { font-size: 13px; color: #555; margin-bottom: 5px; }
-    .deskripsi { font-size: 14px; margin-bottom: 10px; }
-    .link { text-decoration: none; background: #007bff; color: white; padding: 8px 12px; border-radius: 6px; text-align: center; display: inline-block; }
-    .admin-btns { margin-top: 10px; display: flex; gap: 8px; }
-    .admin-btns button { padding: 5px 10px; font-size: 12px; cursor: pointer; }
-    .pagination { text-align: center; margin-top: 30px; }
-    .pagination button { margin: 0 5px; padding: 5px 10px; }
-    .login-box {
-      max-width: 300px; margin: 30px auto; background: white; padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 10px;
-    }
-    pre {
-      background: #eee;
-      padding: 10px;
-      white-space: pre-wrap;
-      max-height: 400px;
-      overflow-y: auto;
-      border-radius: 6px;
+    img { max-width: 100%; border-radius: 5px; margin-bottom: 10px; }
+    .info { margin-bottom: 10px; }
+    .btn-download {
+      display: inline-block; padding: 8px 15px; background: #007bff; color: white;
+      border-radius: 4px; text-decoration: none;
     }
   </style>
 </head>
 <body>
 
-<h1>📁 Daftar File TeraBox</h1>
+  <h1>📂 Data TeraBox Viewer</h1>
+  <div id="container">Loading data...</div>
 
-<div id="login" class="login-box">
-  <h3>🔐 Admin Login</h3>
-  <input type="text" id="user" placeholder="Username" />
-  <input type="password" id="pass" placeholder="Password" />
-  <button onclick="login()">Login</button>
-</div>
+  <script>
+    fetch("data.json")
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById("container");
+        container.innerHTML = "";
 
-<div class="controls" id="filterBar" style="display:none;">
-  <input type="text" id="search" placeholder="🔍 Cari judul..." />
-  <select id="kategori"><option value="">📂 Semua Kategori</option></select>
-</div>
+        if (data.length === 0) {
+          container.innerHTML = "<p>Tidak ada data.</p>";
+          return;
+        }
 
-<div class="container" id="list"></div>
-<div class="pagination" id="pagination"></div>
-
-<div id="uploadForm" style="display:none; margin-top:40px;">
-  <h3>📤 Upload File TeraBox (Admin)</h3>
-  <div style="display:flex; flex-direction:column; gap:10px; max-width:400px; margin:auto;">
-    <input type="text" id="judulUp" placeholder="Judul File" />
-    <input type="text" id="linkUp" placeholder="Link TeraBox" />
-    <input type="text" id="ukuranUp" placeholder="Ukuran File" />
-    <input type="text" id="kategoriUp" placeholder="Kategori" />
-    <textarea id="deskripsiUp" placeholder="Deskripsi..." rows="3"></textarea>
-    <input type="file" id="gambarUp" accept="image/*" />
-    <img id="previewUp" src="" style="max-width:100%; display:none; border-radius:6px;" />
-    <button onclick="uploadTeraBox()">✅ Upload & Lihat data.json</button>
-  </div>
-</div>
-
-<div id="jsonOutput" style="margin-top:50px;">
-  <h3>📄 Salin atau Simpan Manual file <code>data.json</code></h3>
-  <pre id="jsonPreview">Belum ada perubahan.</pre>
-  <div style="display:flex; gap:10px; flex-wrap:wrap;">
-    <button onclick="downloadJson()">⬇️ Download data.json</button>
-    <button onclick="copyJson()">📋 Copy ke Clipboard</button>
-    <span id="copyStatus" style="color:green; font-weight:bold;"></span>
-  </div>
-</div>
-
-<script>
-const ADMIN_USER = "admin";
-const ADMIN_PASS = "123456";
-let allData = [], currentPage = 1, perPage = 20;
-let isAdmin = false;
-
-window.onload = function () {
-  document.getElementById("filterBar").style.display = "flex";
-  loadData();
-};
-
-function login() {
-  const u = document.getElementById("user").value;
-  const p = document.getElementById("pass").value;
-  if (u === ADMIN_USER && p === ADMIN_PASS) {
-    isAdmin = true;
-    document.getElementById("login").style.display = "none";
-    document.getElementById("uploadForm").style.display = "block";
-    render();
-  } else {
-    alert("Username/password salah!");
-  }
-}
-
-document.getElementById("search").addEventListener("input", () => render());
-document.getElementById("kategori").addEventListener("change", () => render());
-
-function loadData() {
-  fetch("data.json").then(res => res.json()).then(data => {
-    allData = data;
-    const katSet = new Set(data.map(x => x.kategori));
-    katSet.forEach(k => {
-      const opt = document.createElement("option");
-      opt.value = k;
-      opt.textContent = k;
-      document.getElementById("kategori").appendChild(opt);
-    });
-    render();
-  });
-}
-
-function render() {
-  const keyword = document.getElementById("search").value.toLowerCase();
-  const filterKat = document.getElementById("kategori").value;
-  const filtered = allData.filter(item =>
-    item.judul.toLowerCase().includes(keyword) &&
-    (filterKat === "" || item.kategori === filterKat)
-  );
-
-  const start = (currentPage - 1) * perPage;
-  const end = start + perPage;
-  const pageItems = filtered.slice(start, end);
-
-  const list = document.getElementById("list");
-  list.innerHTML = "";
-
-  pageItems.forEach((item, index) => {
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <img src="${item.gambar}" alt="preview" />
-      <div class="judul">${item.judul}</div>
-      <div class="meta">Ukuran: ${item.ukuran} | ${item.kategori}</div>
-      <div class="deskripsi">${item.deskripsi}</div>
-      <a class="link" href="${item.link}" target="_blank">🔗 Download</a>
-    `;
-    if (isAdmin) {
-      const btns = document.createElement("div");
-      btns.className = "admin-btns";
-      btns.innerHTML = `
-        <button onclick="edit(${start+index})">✏️ Edit</button>
-        <button onclick="hapus(${start+index})">🗑 Hapus</button>
-      `;
-      div.appendChild(btns);
-    }
-    list.appendChild(div);
-  });
-
-  renderPagination(filtered.length);
-}
-
-function renderPagination(total) {
-  const pageCount = Math.ceil(total / perPage);
-  const pag = document.getElementById("pagination");
-  pag.innerHTML = "";
-
-  for (let i = 1; i <= pageCount; i++) {
-    const btn = document.createElement("button");
-    btn.textContent = i;
-    if (i === currentPage) btn.style.fontWeight = "bold";
-    btn.onclick = () => { currentPage = i; render(); };
-    pag.appendChild(btn);
-  }
-}
-
-function hapus(index) {
-  if (!confirm("Yakin ingin menghapus data ini?")) return;
-  allData.splice(index, 1);
-  saveData();
-}
-
-function edit(index) {
-  const item = allData[index];
-  const judul = prompt("Judul:", item.judul);
-  const link = prompt("Link:", item.link);
-  const ukuran = prompt("Ukuran:", item.ukuran);
-  const kategori = prompt("Kategori:", item.kategori);
-  const deskripsi = prompt("Deskripsi:", item.deskripsi);
-  if (judul && link) {
-    allData[index] = { ...item, judul, link, ukuran, kategori, deskripsi };
-    saveData();
-  }
-}
-
-function saveData() {
-  const jsonData = JSON.stringify(allData, null, 2);
-  document.getElementById("jsonPreview").textContent = jsonData;
-  render();
-}
-
-document.getElementById("gambarUp").addEventListener("change", function(e) {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      document.getElementById("previewUp").src = reader.result;
-      document.getElementById("previewUp").style.display = "block";
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
-function uploadTeraBox() {
-  const judul = document.getElementById("judulUp").value.trim();
-  const link = document.getElementById("linkUp").value.trim();
-  const ukuran = document.getElementById("ukuranUp").value.trim();
-  const kategori = document.getElementById("kategoriUp").value.trim();
-  const deskripsi = document.getElementById("deskripsiUp").value.trim();
-  const gambarFile = document.getElementById("gambarUp").files[0];
-
-  if (!judul || !link || !ukuran || !kategori || !deskripsi || !gambarFile) {
-    alert("Isi semua kolom dan pilih gambar.");
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onloadend = function () {
-    const base64 = reader.result.split(',')[1];
-    const formData = new FormData();
-    formData.append('image', base64);
-
-    fetch("https://api.imgbb.com/1/upload?key=249f1a31637e989ef8f0cafbc83f01f4", {
-      method: "POST",
-      body: formData
-    })
-    .then(res => res.json())
-    .then(res => {
-      if (res.success) {
-        const gambarUrl = res.data.url;
-        const newItem = { judul, link, ukuran, kategori, deskripsi, gambar: gambarUrl };
-        allData.unshift(newItem);
-        saveData();
-      } else {
-        alert("❌ Gagal upload ke imgbb");
-      }
-    })
-    .catch(() => alert("❌ Error saat upload gambar."));
-  };
-
-  reader.readAsDataURL(gambarFile);
-}
-
-function downloadJson() {
-  const content = document.getElementById("jsonPreview").textContent;
-  const blob = new Blob([content], { type: 'application/json' });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "data.json";
-  a.click();
-}
-
-function copyJson() {
-  const text = document.getElementById("jsonPreview").textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    document.getElementById("copyStatus").textContent = "✅ Disalin!";
-    setTimeout(() => {
-      document.getElementById("copyStatus").textContent = "";
-    }, 2000);
-  }).catch(() => {
-    document.getElementById("copyStatus").textContent = "❌ Gagal menyalin.";
-  });
-}
-</script>
+        data.forEach(item => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+            <h3>${item.judul}</h3>
+            <img src="${item.gambar}" alt="${item.judul}">
+            <div class="info"><strong>Kategori:</strong> ${item.kategori}</div>
+            <div class="info"><strong>Ukuran:</strong> ${item.ukuran}</div>
+            <p>${item.deskripsi}</p>
+            <a class="btn-download" href="${item.link}" target="_blank">Download</a>
+          `;
+          container.appendChild(div);
+        });
+      })
+      .catch(err => {
+        document.getElementById("container").innerHTML = "<p>Gagal memuat data.json.</p>";
+        console.error(err);
+      });
+  </script>
 
 </body>
-    </html>
+</html>
