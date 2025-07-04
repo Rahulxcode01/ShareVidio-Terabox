@@ -1,60 +1,456 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Viewer TeraBox</title>
-  <style>
-    body { font-family: sans-serif; margin: 20px; background: #f4f4f4; color: #333; }
-    h1 { text-align: center; margin-bottom: 30px; }
-    .card {
-      background: white; padding: 15px; margin: 10px auto;
-      border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); max-width: 600px;
-    }
-    img { max-width: 100%; border-radius: 5px; margin-bottom: 10px; }
-    .info { margin-bottom: 10px; }
-    .btn-download {
-      display: inline-block; padding: 8px 15px; background: #007bff; color: white;
-      border-radius: 4px; text-decoration: none;
-    }
-  </style>
-</head>
-<body>
-
-  <h1>📂 Data TeraBox Viewer</h1>
-  <div id="container">Loading data...</div>
-
-  <script>
-    fetch("data.json")
-      .then(res => res.json())
-      .then(data => {
-        const container = document.getElementById("container");
-        container.innerHTML = "";
-
-        if (data.length === 0) {
-          container.innerHTML = "<p>Tidak ada data.</p>";
-          return;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeraBox Data Viewer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --dark-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --card-hover: #1e2a5a;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
         }
 
-        data.forEach(item => {
-          const div = document.createElement("div");
-          div.className = "card";
-          div.innerHTML = `
-            <h3>${item.judul}</h3>
-            <img src="${item.gambar}" alt="${item.judul}">
-            <div class="info"><strong>Kategori:</strong> ${item.kategori}</div>
-            <div class="info"><strong>Ukuran:</strong> ${item.ukuran}</div>
-            <p>${item.deskripsi}</p>
-            <a class="btn-download" href="${item.link}" target="_blank">Download</a>
-          `;
-          container.appendChild(div);
-        });
-      })
-      .catch(err => {
-        document.getElementById("container").innerHTML = "<p>Gagal memuat data.json.</p>";
-        console.error(err);
-      });
-  </script>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .language-switcher {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn.active {
+            background: var(--primary);
+            font-weight: 500;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), #4cc9f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .data-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .search-container {
+            margin-bottom: 2rem;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        #searchInput::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .data-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .data-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .data-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            background: var(--card-hover);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.25rem;
+        }
+
+        .card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.8rem;
+            background: rgba(67, 97, 238, 0.2);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .download-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            grid-column: 1 / -1;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            header {
+                margin-bottom: 1.5rem;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .data-container {
+                padding: 1.5rem;
+            }
+
+            .language-switcher {
+                position: static;
+                justify-content: center;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="language-switcher">
+                <button class="lang-btn active" id="idLang">ID</button>
+                <button class="lang-btn" id="enLang">EN</button>
+            </div>
+            <div class="logo">
+                <i class="fas fa-box-open"></i>
+            </div>
+            <h1 id="title">TeraBox Data Viewer</h1>
+            <p class="subtitle" id="subtitle">Tampilkan data TeraBox Anda dengan tampilan yang menarik</p>
+        </header>
+
+        <div class="data-container">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Cari berdasarkan judul, deskripsi atau kategori..." oninput="filterData()">
+            </div>
+
+            <div class="data-cards" id="dataContainer">
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3 id="emptyTitle">Tidak ada data</h3>
+                    <p id="emptyDesc">Data akan muncul setelah Anda memuat file JSON</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p id="footerText">Edit file data.json di GitHub untuk memperbarui konten</p>
+        </footer>
+    </div>
+
+    <script>
+        // Language texts
+        const translations = {
+            id: {
+                title: "TeraBox Data Viewer",
+                subtitle: "Tampilkan data TeraBox Anda dengan tampilan yang menarik",
+                searchPlaceholder: "Cari berdasarkan judul, deskripsi atau kategori...",
+                emptyTitle: "Tidak ada data",
+                emptyDesc: "Data akan muncul setelah Anda memuat file JSON",
+                footerText: "Edit file data.json di GitHub untuk memperbarui konten",
+                category: "Kategori",
+                size: "Ukuran",
+                uncategorized: "Tanpa kategori",
+                sizeNotSpecified: "Ukuran tidak tersedia",
+                noDescription: "Tidak ada deskripsi",
+                download: "Unduh"
+            },
+            en: {
+                title: "TeraBox Data Viewer",
+                subtitle: "Display your TeraBox data in a beautiful layout",
+                searchPlaceholder: "Search by title, description or category...",
+                emptyTitle: "No data available",
+                emptyDesc: "Data will appear after loading JSON file",
+                footerText: "Edit data.json file on GitHub to update content",
+                category: "Category",
+                size: "Size",
+                uncategorized: "Uncategorized",
+                sizeNotSpecified: "Size not specified",
+                noDescription: "No description available",
+                download: "Download"
+            }
+        };
+
+        let currentLang = 'id';
+        let data = [];
+
+        // Load data from external JSON file
+        async function loadData() {
+            try {
+                const response = await fetch('data.json');
+                if (!response.ok) {
+                    throw new Error('Gagal memuat data');
+                }
+                data = await response.json();
+                renderDataCards(data);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('emptyTitle').textContent = currentLang === 'id' ? 
+                    'Error memuat data' : 'Error loading data';
+                document.getElementById('emptyDesc').textContent = currentLang === 'id' ?
+                    'Pastikan data.json ada dan berisi JSON yang valid' : 
+                    'Make sure data.json exists and contains valid JSON';
+            }
+        }
+
+        function filterData() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredData = data.filter(item => 
+                item.judul.toLowerCase().includes(searchTerm) || 
+                (item.deskripsi && item.deskripsi.toLowerCase().includes(searchTerm)) ||
+                (item.kategori && item.kategori.toLowerCase().includes(searchTerm))
+            );
+            renderDataCards(filteredData);
+        }
+
+        function renderDataCards(items) {
+            const container = document.getElementById('dataContainer');
+            
+            if (!items || items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h3>${currentLang === 'id' ? 'Tidak ada data' : 'No data available'}</h3>
+                        <p>${currentLang === 'id' ? 
+                            'Tidak ada item yang sesuai dengan pencarian' : 
+                            'No items match your search criteria'}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = items.map(item => `
+                <div class="data-card">
+                    <img src="${item.gambar || 'https://via.placeholder.com/600x400?text=No+Image'}" 
+                         class="card-image" 
+                         alt="${item.judul}"
+                         onerror="this.src='https://via.placeholder.com/600x400?text=Image+Error'">
+                    <div class="card-body">
+                        <h3 class="card-title">${item.judul}</h3>
+                        <p class="card-text">${item.deskripsi || translations[currentLang].noDescription}</p>
+                        <div class="card-meta">
+                            <span><i class="fas fa-tag"></i> ${item.kategori || translations[currentLang].uncategorized}</span>
+                            <span><i class="fas fa-weight-hanging"></i> ${item.ukuran || translations[currentLang].sizeNotSpecified}</span>
+                        </div>
+                        <div class="card-footer">
+                            <span class="card-badge"><i class="fas fa-link"></i> TeraBox</span>
+                            <a href="${item.link}" target="_blank" class="download-btn">
+                                <i class="fas fa-download"></i> ${translations[currentLang].download}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            
+            // Update UI texts
+            document.getElementById('title').textContent = translations[lang].title;
+            document.getElementById('subtitle').textContent = translations[lang].subtitle;
+            document.getElementById('searchInput').placeholder = translations[lang].searchPlaceholder;
+            document.getElementById('emptyTitle').textContent = translations[lang].emptyTitle;
+            document.getElementById('emptyDesc').textContent = translations[lang].emptyDesc;
+            document.getElementById('footerText').textContent = translations[lang].footerText;
+            
+            // Update active language button
+            document.getElementById('idLang').classList.toggle('active', lang === 'id');
+            document.getElementById('enLang').classList.toggle('active', lang === 'en');
+            
+            // Re-render cards if data exists
+            if (data.length > 0) {
+                renderDataCards(data);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set up language switcher
+            document.getElementById('idLang').addEventListener('click', () => setLanguage('id'));
+            document.getElementById('enLang').addEventListener('click', () => setLanguage('en'));
+            
+            // Load data
+            loadData();
+        });
+    </script>
 </body>
 </html>
