@@ -1,19 +1,24 @@
 [
-  {
-    "judul": "Comel ni",
-    "deskripsi": "Ayah kandung",
-    "link": "nkk",
-    "gambar": "https://i.ibb.co/YFRs5rdm/2cc16d064a5c.jpg",
-    "kategori": "Japan sex",
-    "ukuran": "100mb"
-  },
-
-  {
-    "judul": "Comel ni",
-    "deskripsi": "Ayah kandung",
-    "link": "nkk",
-    "gambar": "https://i.ibb.co/YFRs5rdm/2cc16d064a5c.jpg",
-    "kategori": "Japan sex",
-    "ukuran": "100mb"
-  }
+    {
+        "judul": "Video Viral Terbaru",
+        "deskripsi": "Video panas yang sedang trending di media sosial!",
+        "link": "https://terabox.com/video1",
+        "gambar": "https://i.ibb.co/contoh1.jpg",
+        "kategori": "Hot",
+        "durasi": "12:45",
+        "views": "1.2JT x",
+        "trending": true,
+        "new": true
+    },
+    {
+        "judul": "Koleksi Eksklusif",
+        "deskripsi": "Kumpulan video spesial dari berbagai bintang",
+        "link": "https://terabox.com/video2",
+        "gambar": "https://i.ibb.co/contoh2.jpg",
+        "kategori": "Collection",
+        "durasi": "45:30",
+        "views": "850RB x",
+        "trending": false,
+        "new": false
+    }
 ]
